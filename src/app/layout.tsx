@@ -1,20 +1,35 @@
+'use client'; // Add this at the top
+
 import type { Metadata } from 'next';
 import './globals.css';
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import { SidebarProvider } from '@/components/ui/sidebar';
 import { SidebarNav } from '@/components/layout/sidebar-nav';
 import Header from '@/components/layout/header';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Toaster } from 'sonner';
+import { useState } from 'react';
 
-export const metadata: Metadata = {
-  title: 'Personal Finance Tracker | Smart Spending Insights',
-  description:
-    'Manage your finances, track spending, and get AI-powered insights with Personal Finance Tracker.',
-};
+// Note: You can't use Metadata export with 'use client'
+// So you'll need to move metadata to a separate file or use a different approach
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 60 * 1000,
+            refetchOnWindowFocus: false,
+            retry: 1,
+          },
+        },
+      })
+  );
+
   return (
     <html lang='en'>
       <head>
@@ -31,16 +46,17 @@ export default function RootLayout({
       </head>
 
       <body className='font-body antialiased selection:bg-primary selection:text-primary-foreground'>
-        <SidebarProvider>
-          <div className='flex h-screen w-full bg-[#f8fafc] dark:bg-slate-950'>
-            <SidebarNav />
-
-            <div className='flex flex-col gap-0'>
-              <Header />
-              {children}
+        <QueryClientProvider client={queryClient}>
+          <SidebarProvider>
+            <div className='flex h-screen w-full bg-[#f8fafc] dark:bg-slate-950'>
+              <SidebarNav />
+              <Header>
+                {children}
+              </Header>
             </div>
-          </div>
-        </SidebarProvider>
+          </SidebarProvider>
+          <Toaster richColors position="top-right" />
+        </QueryClientProvider>
       </body>
     </html>
   );

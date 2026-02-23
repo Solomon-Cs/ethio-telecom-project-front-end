@@ -1,6 +1,7 @@
 'use client';
 
 import { useFinanceStore } from '@/hooks/use-finance-store';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 export default function Home({ children }: { children: React.ReactNode }) {
   const {
@@ -24,7 +25,11 @@ export default function Home({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    // <div className='flex h-screen w-full bg-[#f8fafc] dark:bg-slate-950'>
-    <div>{children}</div>
+    <div>
+      <QueryClientProvider client={new QueryClient()}>
+
+        {children}
+      </QueryClientProvider>
+    </div>
   );
 }
