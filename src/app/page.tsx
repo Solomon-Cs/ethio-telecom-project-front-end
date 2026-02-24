@@ -27,7 +27,6 @@ export default function Home({ children }: { children: React.ReactNode }) {
   return (
     <div>
       <QueryClientProvider client={new QueryClient()}>
-
         {children}
       </QueryClientProvider>
     </div>

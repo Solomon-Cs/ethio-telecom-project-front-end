@@ -25,17 +25,24 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { signOut, useSession } from 'next-auth/react';
+
 
 export function SidebarNav() {
   const pathname = usePathname();
+  const { data: session } = useSession()
+  console.log("🚀 ~ SidebarNav ~ session:", session)
 
   const items = [
     { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
     { title: 'Transactions', url: '/transactions', icon: ArrowLeftRight },
     { title: 'Reports', url: '/reports', icon: PieChart },
-    { title: 'Goals', url: '/goals', icon: Target },
     { title: 'Profile', url: '/profile', icon: UserCircle },
   ];
+
+  const handleSignOut = () => {
+    signOut({ callbackUrl: "/auth/login" })
+  }
 
   return (
     <Sidebar className='border-r border-border/50 bg-background/80 backdrop-blur-xl'>
@@ -103,21 +110,21 @@ export function SidebarNav() {
               <Avatar className='h-9 w-9 border-2 border-primary/20'>
                 <AvatarImage src='https://picsum.photos/seed/user123/40/40' />
                 <AvatarFallback className='bg-primary/10 text-primary font-bold'>
-                  FM
+                  {session?.user.firstName ? session?.user?.firstName?.charAt(0).toUpperCase() + session?.user?.firstName?.charAt(1).toUpperCase() : "A"}
                 </AvatarFallback>
               </Avatar>
               <div className='flex flex-col items-start overflow-hidden'>
                 <span className='text-sm font-bold truncate'>
-                  Financial Maven
+                  {session?.user?.username}
                 </span>
                 <span className='text-[10px] font-bold text-primary uppercase tracking-tighter'>
-                  Pro Member
+                  {session?.user?.email}
                 </span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem className='mt-2'>
-            <SidebarMenuButton className='text-destructive hover:text-destructive hover:bg-destructive/10 rounded-xl'>
+            <SidebarMenuButton onClick={handleSignOut} className='text-destructive hover:text-destructive hover:bg-destructive/10 rounded-xl'>
               <LogOut className='h-4 w-4' />
               <span className='font-semibold'>Logout</span>
             </SidebarMenuButton>

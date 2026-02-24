@@ -1,9 +1,9 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { TransactionFilters, transactionService } from '@/services/transaction.service';
 import { TransactionFormValues } from '@/lib/validations/transaction';
+import { TransactionFilters, transactionService } from '@/services/transaction.service';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
-export function useTransactions(filters: TransactionFilters = {}) {
+export function useTransactions(userId?: string, filters: TransactionFilters = {}) {
     const queryClient = useQueryClient();
 
     const { data, isLoading, error, refetch } = useQuery({
@@ -11,10 +11,15 @@ export function useTransactions(filters: TransactionFilters = {}) {
         queryFn: () => transactionService.getTransactions(filters),
     });
 
+    const { data: transactionsByUser, isLoading: isLoadingByUser, error: errorByUser, refetch: refetchByUser } = useQuery({
+        queryKey: ['transactionsByUser', filters],
+        queryFn: () => transactionService.getTransactionByUserId(userId as string, filters),
+    });
+
     const createTransaction = useMutation({
         mutationFn: (data: TransactionFormValues) => transactionService.createTransaction(data),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['transactions'] });
+            queryClient.invalidateQueries({ queryKey: ['transactionsByUser'] });
             queryClient.invalidateQueries({ queryKey: ['summary'] });
             toast.success('Transaction created successfully', {
                 description: 'Your transaction has been added.',
@@ -69,5 +74,9 @@ export function useTransactions(filters: TransactionFilters = {}) {
         createTransaction,
         updateTransaction,
         deleteTransaction,
+        transactionsByUser: transactionsByUser?.data || [],
+        isLoadingByUser,
+        errorByUser,
+        refetchByUser,
     };
 }

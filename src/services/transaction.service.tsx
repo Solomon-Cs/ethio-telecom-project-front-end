@@ -31,21 +31,27 @@ export interface TransactionFilters {
     startDate?: string;
     endDate?: string;
     search?: string;
+    userId?: string;
 }
 
 class TransactionService {
-    private baseEndpoint = 'http://localhost:7001/api/transactions';
+    private baseEndpoint = `${process.env.NEXT_PUBLIC_API_URL}/transactions`;
 
     async getTransactions(filters: TransactionFilters = {}): Promise<TransactionsResponse> {
         const response = await axiosInstance.get(this.baseEndpoint, {
             params: filters
         });
-        console.log("🚀 ~ TransactionService ~ getTransactions ~ response:", response)
         return response.data;
     }
 
     async getTransactionById(id: string): Promise<Transaction> {
         const response = await axiosInstance.get(`${this.baseEndpoint}/${id}`);
+        return response.data;
+    }
+    async getTransactionByUserId(userId: string, filters: TransactionFilters = {}): Promise<TransactionsResponse> {
+        const response = await axiosInstance.get(`${this.baseEndpoint}/user/${userId}`, {
+            params: filters
+        });
         return response.data;
     }
 

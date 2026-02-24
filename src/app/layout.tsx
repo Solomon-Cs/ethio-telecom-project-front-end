@@ -1,4 +1,4 @@
-'use client'; // Add this at the top
+'use client';
 
 import type { Metadata } from 'next';
 import './globals.css';
@@ -8,9 +8,8 @@ import Header from '@/components/layout/header';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'sonner';
 import { useState } from 'react';
-
-// Note: You can't use Metadata export with 'use client'
-// So you'll need to move metadata to a separate file or use a different approach
+import { SessionProvider } from "next-auth/react";
+import { usePathname } from 'next/navigation';
 
 export default function RootLayout({
   children,
@@ -30,6 +29,12 @@ export default function RootLayout({
       })
   );
 
+  const pathname = usePathname();
+
+  // Define auth routes where sidebar and header should be hidden
+  const authRoutes = ['/auth/login', '/auth/signup'];
+  const isAuthRoute = authRoutes.includes(pathname);
+
   return (
     <html lang='en'>
       <head>
@@ -46,17 +51,27 @@ export default function RootLayout({
       </head>
 
       <body className='font-body antialiased selection:bg-primary selection:text-primary-foreground'>
-        <QueryClientProvider client={queryClient}>
-          <SidebarProvider>
-            <div className='flex h-screen w-full bg-[#f8fafc] dark:bg-slate-950'>
-              <SidebarNav />
-              <Header>
-                {children}
-              </Header>
-            </div>
-          </SidebarProvider>
-          <Toaster richColors position="top-right" />
-        </QueryClientProvider>
+        <SessionProvider>
+          <QueryClientProvider client={queryClient}>
+            <SidebarProvider>
+              {isAuthRoute ? (
+                // Render only children for auth routes (no sidebar/header)
+                <div className='flex h-screen w-full'>
+                  {children}
+                </div>
+              ) : (
+                // Render with sidebar and header for protected routes
+                <div className='flex h-screen w-full bg-[#f8fafc] dark:bg-slate-950'>
+                  <SidebarNav />
+                  <Header>
+                    {children}
+                  </Header>
+                </div>
+              )}
+            </SidebarProvider>
+            <Toaster richColors position="top-right" />
+          </QueryClientProvider>
+        </SessionProvider>
       </body>
     </html>
   );

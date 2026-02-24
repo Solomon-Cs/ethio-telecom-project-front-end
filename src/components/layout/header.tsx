@@ -3,13 +3,11 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
-import { useFinanceStore } from '@/hooks/use-finance-store';
 import { Bell, Search } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 
 const Header = ({ children }: { children: React.ReactNode }) => {
-  const {
-    profile,
-  } = useFinanceStore();
+  const { data: session } = useSession()
 
   return (
     <SidebarInset className='flex-1 overflow-auto'>
@@ -32,14 +30,14 @@ const Header = ({ children }: { children: React.ReactNode }) => {
           <div className='flex items-center gap-3 bg-card border border-border/50 px-4 py-1.5 rounded-2xl shadow-sm'>
             <div className='flex flex-col items-end'>
               <span className='text-xs font-bold leading-tight'>
-                {profile?.username}
+                {session?.user?.firstName + " " + session?.user?.middleName}
               </span>
               <span className='text-[10px] text-muted-foreground font-medium uppercase tracking-tighter'>
-                Personal
+                {session?.user?.email}
               </span>
             </div>
             <div className='h-8 w-8 rounded-xl bg-gradient-to-br from-primary to-emerald-600 flex items-center justify-center text-primary-foreground font-bold shadow-md shadow-primary/20'>
-              {profile?.username?.charAt(0)}
+              {session?.user?.firstName?.charAt(0)}
             </div>
           </div>
         </div>
