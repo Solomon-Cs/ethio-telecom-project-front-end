@@ -11,7 +11,7 @@ const Header = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <SidebarInset className='flex-1 overflow-auto'>
-      <header className='sticky top-0 z-30 flex h-20 items-center gap-4 border-b bg-background/60 backdrop-blur-xl px-8'>
+      <header className='sticky top-4 z-30 flex h-24 items-center gap-4 border-b bg-background/60 backdrop-blur-xl px-8'>
         <SidebarTrigger className='' />
         <div className='hidden md:flex relative max-w-md w-full'>
           <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />

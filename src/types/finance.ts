@@ -1,14 +1,14 @@
 export type TransactionType = 'income' | 'expense';
 
-export type TransactionCategory = 
-  | 'Food' 
-  | 'Rent' 
-  | 'Utilities' 
-  | 'Entertainment' 
-  | 'Salary' 
-  | 'Shopping' 
-  | 'Transportation' 
-  | 'Health' 
+export type TransactionCategory =
+  | 'Food'
+  | 'Rent'
+  | 'Utilities'
+  | 'Entertainment'
+  | 'Salary'
+  | 'Shopping'
+  | 'Transportation'
+  | 'Health'
   | 'Other';
 
 export interface Transaction {
@@ -18,6 +18,9 @@ export interface Transaction {
   category: TransactionCategory;
   description: string;
   type: TransactionType;
+  userId?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface UserProfile {
@@ -27,8 +30,10 @@ export interface UserProfile {
 }
 
 export interface FinancialSummary {
-  totalIncome: number;
-  totalExpenses: number;
-  balance: number;
-  categoryTotals: Record<TransactionCategory, number>;
+  summary: {
+    totalIncome: number;
+    totalExpense: number;
+    balance: number;
+  }
+  groupedByCategory: Record<any, any>;
 }

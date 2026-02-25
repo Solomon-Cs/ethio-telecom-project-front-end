@@ -19,14 +19,12 @@ const CategoryIcon = ({ category }: { category: string }) => {
   }
 }
 
-export function RecentTransactions({ 
-  transactions, 
-  onDelete, 
-  currency 
-}: { 
-  transactions: Transaction[], 
+export function RecentTransactions({
+  transactions,
+  onDelete,
+}: {
+  transactions: any[],
   onDelete: (id: string) => void,
-  currency: string
 }) {
   return (
     <Card className="border-none shadow-sm h-full">
@@ -48,11 +46,11 @@ export function RecentTransactions({
               </div>
               <div className="flex items-center gap-3">
                 <p className={`text-sm font-bold ${t.type === 'income' ? 'text-secondary' : 'text-foreground'}`}>
-                  {t.type === 'income' ? '+' : '-'}{currency}{t.amount.toLocaleString()}
+                  {t.type === 'income' ? '+' : '-'} {" ETB "} {t.amount.toLocaleString()}
                 </p>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
+                <Button
+                  variant="ghost"
+                  size="icon"
                   onClick={() => onDelete(t.id)}
                   className="h-8 w-8 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity hover:text-destructive"
                 >

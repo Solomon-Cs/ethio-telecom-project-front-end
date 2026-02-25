@@ -11,16 +11,22 @@ export function useTransactions(userId?: string, filters: TransactionFilters = {
         queryFn: () => transactionService.getTransactions(filters),
     });
 
-    const { data: transactionsByUser, isLoading: isLoadingByUser, error: errorByUser, refetch: refetchByUser } = useQuery({
+    const { data: transactionsByUser, isLoading: isLoadingTransactionsByUser, error: errorTransactionsByUser, refetch: refetchTransactionsByUser } = useQuery({
         queryKey: ['transactionsByUser', filters],
         queryFn: () => transactionService.getTransactionByUserId(userId as string, filters),
     });
+
+    const { data: summaryByUser, isLoading: isLoadingSummaryByUser, error: errorSummaryByUser, refetch: refetchSummaryByUser } = useQuery({
+        queryKey: ['summaryByUser'],
+        queryFn: () => transactionService.getSummaryByUser(userId as string),
+    });
+    console.log("🚀 ~ useTransactions ~ summaryByUser:", summaryByUser)
 
     const createTransaction = useMutation({
         mutationFn: (data: TransactionFormValues) => transactionService.createTransaction(data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['transactionsByUser'] });
-            queryClient.invalidateQueries({ queryKey: ['summary'] });
+            queryClient.invalidateQueries({ queryKey: ['summaryByUser'] });
             toast.success('Transaction created successfully', {
                 description: 'Your transaction has been added.',
             });
@@ -75,8 +81,12 @@ export function useTransactions(userId?: string, filters: TransactionFilters = {
         updateTransaction,
         deleteTransaction,
         transactionsByUser: transactionsByUser?.data || [],
-        isLoadingByUser,
-        errorByUser,
-        refetchByUser,
+        isLoadingTransactionsByUser,
+        errorTransactionsByUser,
+        refetchTransactionsByUser,
+        summaryByUser,
+        isLoadingSummaryByUser,
+        errorSummaryByUser,
+        refetchSummaryByUser,
     };
 }

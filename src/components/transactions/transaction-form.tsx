@@ -27,19 +27,21 @@ import dayjs from 'dayjs';
 import { useState } from 'react';
 import { Field, FieldLabel } from '../ui/field';
 import { InputGroup, InputGroupInput } from '../ui/input-group';
+import { useCategories } from '@/hooks/use-category';
+import { useSession } from 'next-auth/react';
 
-const categories = [
-    'Food & Dining',
-    'Shopping',
-    'Transportation',
-    'Entertainment',
-    'Bills & Utilities',
-    'Healthcare',
-    'Education',
-    'Travel',
-    'Income',
-    'Other',
-];
+// const categories = [
+//     'Food & Dining',
+//     'Shopping',
+//     'Transportation',
+//     'Entertainment',
+//     'Bills & Utilities',
+//     'Healthcare',
+//     'Education',
+//     'Travel',
+//     'Income',
+//     'Other',
+// ];
 
 interface TransactionFormProps {
     initialData?: any;
@@ -54,6 +56,9 @@ export function TransactionForm({ initialData, onSubmit, isSubmitting }: Transac
         new Date(value) || undefined
     )
 
+    const { data: session } = useSession()
+    const { categoriesByUser, isLoadingByUser, errorByUser, refetchByUser } = useCategories(session?.user?.id as string);
+    console.log("🚀 ~ TransactionForm ~ categories:", categoriesByUser)
 
     const form = useForm<TransactionFormValues>({
         resolver: zodResolver(transactionSchema),
@@ -136,9 +141,9 @@ export function TransactionForm({ initialData, onSubmit, isSubmitting }: Transac
                                     </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
-                                    {categories.map((category) => (
-                                        <SelectItem key={category} value={category}>
-                                            {category}
+                                    {categoriesByUser?.map((category: any) => (
+                                        <SelectItem key={category.id} value={category.name}>
+                                            {category.name}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>

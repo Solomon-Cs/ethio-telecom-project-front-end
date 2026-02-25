@@ -1,26 +1,33 @@
 'use client';
 import { AIAssistant } from '@/components/finance/ai-assistant';
 import { RecentTransactions } from '@/components/finance/recent-transactions';
-import { SpendingChart } from '@/components/finance/spending-chart';
+import { IncomeExpenseCharts } from '@/components/finance/spending-chart';
 import { SummaryCards } from '@/components/finance/summary-cards';
 import { TransactionForm } from '@/components/finance/transaction-form';
-import { useFinanceStore } from '@/hooks/use-finance-store';
+import { useTransactions } from '@/hooks/use-transactions';
 import { Sparkles } from 'lucide-react';
-import React from 'react';
+import { useSession } from 'next-auth/react';
 
 const DashboardPage = () => {
+
+  const { data: session } = useSession();
+  console.log("🚀 ~ DashboardPage ~ session:", session)
+
   const {
-    transactions,
-    summary,
-    profile,
-    addTransaction,
+    summaryByUser,
+    isLoadingSummaryByUser,
+    transactionsByUser,
+    isLoadingTransactionsByUser,
     deleteTransaction,
-    isLoading,
-  } = useFinanceStore();
+    createTransaction,
+    refetch,
+  } = useTransactions(session?.user?.id as string);
+  console.log("🚀 ~ DashboardPage ~ transactionsByUser:", transactionsByUser)
+
 
   return (
     <>
-      <main className='p-8 space-y-10 max-w-7xl mx-auto'>
+      <main className='px-4 py-8 space-y-10 w-full '>
         <section className='flex flex-col md:flex-row md:items-center justify-between gap-4'>
           <div className='space-y-1'>
             <h1 className='text-4xl font-black tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent'>
@@ -40,27 +47,26 @@ const DashboardPage = () => {
           </div>
         </section>
 
-        <SummaryCards summary={summary} currency={profile.currency} />
+        <SummaryCards summary={summaryByUser} />
 
         <div className='grid gap-8 lg:grid-cols-12'>
-          <div className='lg:col-span-8 space-y-8'>
+          <div className='lg:col-span-9 space-y-8'>
             <div className='grid gap-8 md:grid-cols-2'>
-              <SpendingChart summary={summary} />
+              <IncomeExpenseCharts summary={summaryByUser} />
               <div className='space-y-4'>
                 <h3 className='text-xs font-black uppercase tracking-widest text-muted-foreground px-1'>
                   Quick Add
                 </h3>
-                <TransactionForm onAdd={addTransaction} />
+                <TransactionForm onAdd={createTransaction as any} />
               </div>
             </div>
             <RecentTransactions
-              transactions={transactions}
-              onDelete={deleteTransaction}
-              currency={profile.currency}
+              transactions={transactionsByUser}
+              onDelete={deleteTransaction as any}
             />
           </div>
 
-          <aside className='lg:col-span-4 h-fit sticky top-24'>
+          <aside className='lg:col-span-3 h-fit sticky top-24'>
             <AIAssistant />
           </aside>
         </div>

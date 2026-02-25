@@ -21,9 +21,9 @@ export default function TransactionsPage() {
   const {
     transactionsByUser,
     pagination,
-    isLoadingByUser,
-    errorByUser,
-    refetchByUser,
+    isLoadingTransactionsByUser,
+    errorTransactionsByUser,
+    refetchTransactionsByUser,
     createTransaction,
     updateTransaction,
     deleteTransaction,
@@ -47,7 +47,7 @@ export default function TransactionsPage() {
     await createTransaction.mutateAsync({ ...data, userId: session?.user.id });
   };
 
-  if (errorByUser) {
+  if (errorTransactionsByUser) {
     return (
       <div className="p-6">
         <Alert variant="destructive">
@@ -56,7 +56,7 @@ export default function TransactionsPage() {
             Failed to load transactions. Please try again.
           </AlertDescription>
         </Alert>
-        <Button onClick={() => refetchByUser()} className="mt-4">
+        <Button onClick={() => refetchTransactionsByUser()} className="mt-4">
           Retry
         </Button>
       </div>
@@ -67,15 +67,15 @@ export default function TransactionsPage() {
     <div className="space-y-6 p-4 sm:p-6">
       <TransactionsHeader
         onFilterChange={handleFilterChange}
-        onRefresh={() => refetchByUser()}
+        onRefresh={() => refetchTransactionsByUser()}
         onClearFilters={handleClearFilters}
         hasActiveFilters={Object.keys(filters).length > 0}
-        isRefreshing={isLoadingByUser}
+        isRefreshing={isLoadingTransactionsByUser}
         onCreateTransaction={handleCreateTransaction}
         isCreating={createTransaction.isPending}
       />
 
-      {isLoadingByUser ? (
+      {isLoadingTransactionsByUser ? (
         <Card className="p-4">
           <div className="space-y-3">
             <Skeleton className="h-10 w-full" />

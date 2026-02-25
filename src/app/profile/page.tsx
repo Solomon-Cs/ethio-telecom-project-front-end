@@ -27,10 +27,12 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 import { motion } from 'framer-motion';
+import { useSession } from 'next-auth/react';
 
 export default function ProfilePage() {
   const { profile, updateProfile, isLoading } = useFinanceStore();
   const { toast } = useToast();
+  const { data: session } = useSession();
 
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState(profile);

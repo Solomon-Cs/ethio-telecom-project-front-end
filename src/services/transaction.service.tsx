@@ -8,7 +8,11 @@ export interface Transaction {
     category: string;
     description?: string | null;
     date: string;
-    userId: string;
+    userId?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    deletedAt?: string;
+
 }
 
 export interface TransactionsResponse {
@@ -36,6 +40,7 @@ export interface TransactionFilters {
 
 class TransactionService {
     private baseEndpoint = `${process.env.NEXT_PUBLIC_API_URL}/transactions`;
+    private summaryEndpoint = `${process.env.NEXT_PUBLIC_API_URL}/summary`;
 
     async getTransactions(filters: TransactionFilters = {}): Promise<TransactionsResponse> {
         const response = await axiosInstance.get(this.baseEndpoint, {
@@ -75,9 +80,15 @@ class TransactionService {
     }
 
     async getSummary(filters?: { startDate?: string; endDate?: string }) {
-        const response = await axiosInstance.get(`${this.baseEndpoint}/summary`, {
+        const response = await axiosInstance.get(`${this.summaryEndpoint}/summary`, {
             params: filters
         });
+        return response.data;
+    }
+
+    async getSummaryByUser(userId: string) {
+        const response = await axiosInstance.get(`${this.summaryEndpoint}/users/${userId}/summary`);
+        console.log("🚀 ~ TransactionService ~ getSummaryByUser ~ response:", response)
         return response.data;
     }
 }

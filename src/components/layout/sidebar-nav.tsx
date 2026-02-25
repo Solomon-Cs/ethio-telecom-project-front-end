@@ -9,6 +9,7 @@ import {
   Sparkles,
   PieChart,
   Target,
+  List,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -36,7 +37,8 @@ export function SidebarNav() {
   const items = [
     { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
     { title: 'Transactions', url: '/transactions', icon: ArrowLeftRight },
-    { title: 'Reports', url: '/reports', icon: PieChart },
+    { title: 'Categories', url: '/category', icon: List },
+    // { title: 'Reports', url: '/reports', icon: PieChart },
     { title: 'Profile', url: '/profile', icon: UserCircle },
   ];
 
