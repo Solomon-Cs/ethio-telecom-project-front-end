@@ -1,80 +1,82 @@
-"use client"
+'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { FinancialSummary } from "@/types/finance"
-import { TrendingUp, TrendingDown } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { FinancialSummary } from '@/types/finance';
+import { BarChart3 } from 'lucide-react';
 import {
-  PieChart,
-  Pie,
-  Cell,
   ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
   Tooltip,
   Legend,
-} from "recharts"
+  CartesianGrid,
+} from 'recharts';
 
 type Props = {
-  summary: FinancialSummary
-}
+  summary: FinancialSummary;
+};
 
-export function IncomeExpenseCharts({ summary }: Props) {
-  const transformData = (type: "INCOME" | "EXPENSE") => {
-    if (!summary?.groupedByCategory) return []
+export function IncomeExpenseBarChart({ summary }: Props) {
+  const transformData = () => {
+    if (!summary?.groupedByCategory) return [];
 
-    return Object.values(summary.groupedByCategory)
-      .filter((item: any) => item.categoryType === type)
-      .map((item: any) => ({
-        name: item.categoryName,
-        value: Number(item.totalAmount),
-      }))
-      .sort((a, b) => b.value - a.value)
-  }
+    const map: Record<
+      string,
+      { category: string; income: number; expense: number }
+    > = {};
 
-  const incomeData = transformData("INCOME")
-  const expenseData = transformData("EXPENSE")
+    Object.values(summary.groupedByCategory).forEach((item: any) => {
+      const category = item.categoryName;
 
-  const incomeColors = ["#16a34a", "#22c55e", "#4ade80", "#15803d"]
-  const expenseColors = ["#ef4444", "#f97316", "#f59e0b", "#dc2626"]
+      if (!map[category]) {
+        map[category] = { category, income: 0, expense: 0 };
+      }
 
-  const renderChart = (
-    title: string,
-    icon: React.ReactNode,
-    data: { name: string; value: number }[],
-    colors: string[],
-    emptyText: string
-  ) => (
-    <Card className="border-none shadow-sm flex flex-col h-full">
+      if (item.categoryType === 'INCOME') {
+        map[category].income += Number(item.totalAmount);
+      }
+
+      if (item.categoryType === 'EXPENSE') {
+        map[category].expense += Number(item.totalAmount);
+      }
+    });
+
+    return Object.values(map).sort(
+      (a, b) => b.income + b.expense - (a.income + a.expense),
+    );
+  };
+
+  const data = transformData();
+
+  return (
+    <Card className='border-none shadow-sm'>
       <CardHeader>
-        <CardTitle className="text-lg flex items-center gap-2">
-          {icon}
-          {title}
+        <CardTitle className='flex items-center gap-2 text-lg'>
+          <BarChart3 className='h-5 w-5 text-primary' />
+          Income vs Expense by Category
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="flex-1 pb-4">
-        <div className="h-[300px] w-full">
+      <CardContent>
+        <div className='h-[400px] w-full'>
           {data.length === 0 ? (
-            <div className="flex items-center justify-center h-full text-muted-foreground">
-              {emptyText}
+            <div className='flex items-center justify-center h-full text-muted-foreground'>
+              No financial data available
             </div>
           ) : (
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={data}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={90}
-                  paddingAngle={4}
-                  dataKey="value"
-                >
-                  {data.map((_, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={colors[index % colors.length]}
-                    />
-                  ))}
-                </Pie>
+            <ResponsiveContainer width='100%' height='100%'>
+              <BarChart data={data} barGap={8}>
+                <CartesianGrid strokeDasharray='3 3' vertical={false} />
+
+                <XAxis dataKey='category' />
+
+                <YAxis
+                  tickFormatter={(value) =>
+                    new Intl.NumberFormat().format(value)
+                  }
+                />
 
                 <Tooltip
                   formatter={(value: number) =>
@@ -82,32 +84,26 @@ export function IncomeExpenseCharts({ summary }: Props) {
                   }
                 />
 
-                <Legend verticalAlign="bottom" height={36} />
-              </PieChart>
+                <Legend />
+
+                <Bar
+                  dataKey='income'
+                  name='Income'
+                  radius={[6, 6, 0, 0]}
+                  fill='#16a34a'
+                />
+
+                <Bar
+                  dataKey='expense'
+                  name='Expense'
+                  radius={[6, 6, 0, 0]}
+                  fill='#ef4444'
+                />
+              </BarChart>
             </ResponsiveContainer>
           )}
         </div>
       </CardContent>
     </Card>
-  )
-
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {renderChart(
-        "Income by Category",
-        <TrendingUp className="h-5 w-5 text-green-600" />,
-        incomeData,
-        incomeColors,
-        "No income data available"
-      )}
-
-      {renderChart(
-        "Expenses by Category",
-        <TrendingDown className="h-5 w-5 text-red-600" />,
-        expenseData,
-        expenseColors,
-        "No expense data available"
-      )}
-    </div>
-  )
+  );
 }

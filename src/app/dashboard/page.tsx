@@ -1,7 +1,6 @@
 'use client';
-import { AIAssistant } from '@/components/finance/ai-assistant';
 import { RecentTransactions } from '@/components/finance/recent-transactions';
-import { IncomeExpenseCharts } from '@/components/finance/spending-chart';
+import { IncomeExpenseBarChart } from '@/components/finance/spending-chart';
 import { SummaryCards } from '@/components/finance/summary-cards';
 import { TransactionForm } from '@/components/transactions/transaction-form';
 import { useTransactions } from '@/hooks/use-transactions';
@@ -57,8 +56,8 @@ const DashboardPage = () => {
         <div className='grid gap-8 lg:grid-cols-12'>
           <div className='lg:col-span-12 space-y-8'>
             <div className='grid gap-4 md:grid-cols-2'>
-              <IncomeExpenseCharts summary={summaryByUser} />
-              <div className='space-y-4 shadow-lg shadow-primary/10 rounded-2xl border border-border/50 p-4'>
+              <IncomeExpenseBarChart summary={summaryByUser} />
+              <div className='space-y-3 shadow-lg shadow-primary/10 rounded-2xl border border-border/50 p-4'>
                 <h3 className='text-xs font-black uppercase tracking-widest text-muted-foreground px-1'>
                   Quick Add
                 </h3>

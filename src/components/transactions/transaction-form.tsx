@@ -65,7 +65,7 @@ export function TransactionForm({
 
   const { data: session } = useSession();
   const { categoriesByUser, isLoadingByUser, errorByUser, refetchByUser } =
-    useCategories(session?.user?.id as string);
+    useCategories(session?.user?.id as string, { limit: 100 });
 
   console.log('🚀 ~ TransactionForm ~ categories:', categoriesByUser);
 
@@ -157,15 +157,17 @@ export function TransactionForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Category</FormLabel>
+
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder='Select a category' />
                   </SelectTrigger>
                 </FormControl>
-                <SelectContent>
+
+                <SelectContent className='max-h-60 overflow-y-auto'>
                   {Array.isArray(categoriesByUser)
-                    ? categoriesByUser?.map((category: any) => (
+                    ? categoriesByUser.map((category: any) => (
                         <SelectItem key={category.id} value={category.name}>
                           {category.name}
                         </SelectItem>
@@ -173,6 +175,7 @@ export function TransactionForm({
                     : null}
                 </SelectContent>
               </Select>
+
               <FormMessage />
             </FormItem>
           )}
