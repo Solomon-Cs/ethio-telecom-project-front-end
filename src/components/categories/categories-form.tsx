@@ -24,11 +24,8 @@ import {
 } from '@/components/ui/select';
 import { useCategories } from '@/hooks/use-category';
 import { cn } from '@/lib/utils';
-import dayjs from 'dayjs';
 import { useSession } from 'next-auth/react';
 import { useState } from 'react';
-import { Field, FieldLabel } from '../ui/field';
-import { InputGroup, InputGroupInput } from '../ui/input-group';
 
 
 interface CategoryFormProps {
@@ -108,7 +105,7 @@ export function CategoryForm({ initialData, onSubmit, isSubmitting }: CategoryFo
                 <FormField
                     control={form.control}
                     name="description"
-                    render={({ field }) => (
+                    render={({ field }: any) => (
                         <FormItem>
                             <FormLabel>Description (Optional)</FormLabel>
                             <FormControl>
@@ -118,7 +115,6 @@ export function CategoryForm({ initialData, onSubmit, isSubmitting }: CategoryFo
                         </FormItem>
                     )}
                 />
-
                 <Button
                     type="submit"
                     className="w-full"

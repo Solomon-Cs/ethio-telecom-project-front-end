@@ -10,6 +10,7 @@ import {
   PieChart,
   Target,
   List,
+  Wallet,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -51,14 +52,14 @@ export function SidebarNav() {
       <SidebarHeader className='p-6'>
         <div className='flex items-center gap-3'>
           <div className='flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground font-black text-2xl shadow-lg shadow-primary/20'>
-            $
+            <Wallet className="h-7 w-7 text-white" />
           </div>
           <div className='flex flex-col'>
             <span className='font-black text-lg tracking-tight leading-none'>
               FinTrack
             </span>
             <span className='text-[10px] text-primary font-bold uppercase tracking-widest mt-0.5'>
-              Premium AI
+              Finance Tracker
             </span>
           </div>
         </div>
@@ -70,7 +71,7 @@ export function SidebarNav() {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className='gap-1'>
-              {items.map((item) => (
+              {items?.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild

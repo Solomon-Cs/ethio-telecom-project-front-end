@@ -32,6 +32,7 @@ export default function TransactionsPage() {
     limit: pageSize,
     ...filters,
   });
+  console.log("🚀 ~ TransactionsPage ~ pagination:", pagination)
 
   const handleFilterChange = (newFilters: any) => {
     setFilters(newFilters);
@@ -64,49 +65,51 @@ export default function TransactionsPage() {
   }
 
   return (
-    <div className='space-y-6 p-4 sm:p-6'>
-      <TransactionsHeader
-        onFilterChange={handleFilterChange}
-        onRefresh={() => refetchTransactionsByUser()}
-        onClearFilters={handleClearFilters}
-        hasActiveFilters={Object.keys(filters).length > 0}
-        isRefreshing={isLoadingTransactionsByUser}
-        onCreateTransaction={handleCreateTransaction}
-        isCreating={createTransaction.isPending}
-      />
+    <>
+      <div className='space-y-6 p-4 sm:p-6'>
+        <TransactionsHeader
+          onFilterChange={handleFilterChange}
+          onRefresh={() => refetchTransactionsByUser()}
+          onClearFilters={handleClearFilters}
+          hasActiveFilters={Object.keys(filters).length > 0}
+          isRefreshing={isLoadingTransactionsByUser}
+          onCreateTransaction={handleCreateTransaction}
+          isCreating={createTransaction.isPending}
+        />
 
-      {isLoadingTransactionsByUser ? (
-        <Card className='p-4'>
-          <div className='space-y-3'>
-            <Skeleton className='h-10 w-full' />
-            <Skeleton className='h-10 w-full' />
-            <Skeleton className='h-10 w-full' />
-            <Skeleton className='h-10 w-full' />
-            <Skeleton className='h-10 w-full' />
-          </div>
-        </Card>
-      ) : (
-        <>
-          <TransactionsTable
-            transactions={transactionsByUser}
-            onEdit={(id, data) => updateTransaction.mutate({ id, data })}
-            onDelete={(id) => deleteTransaction.mutate(id)}
-            isUpdating={updateTransaction.isPending}
-            isDeleting={deleteTransaction.isPending}
-          />
-
-          {pagination && pagination.total > 0 && (
-            <DataTablePagination
-              page={pagination.page}
-              pageSize={pagination.limit}
-              total={pagination.total}
-              pages={pagination.pages}
-              onPageChange={setPage}
-              onPageSizeChange={setPageSize}
+        {isLoadingTransactionsByUser ? (
+          <Card className='p-4'>
+            <div className='space-y-3'>
+              <Skeleton className='h-10 w-full' />
+              <Skeleton className='h-10 w-full' />
+              <Skeleton className='h-10 w-full' />
+              <Skeleton className='h-10 w-full' />
+              <Skeleton className='h-10 w-full' />
+            </div>
+          </Card>
+        ) : (
+          <>
+            <TransactionsTable
+              transactions={transactionsByUser}
+              onEdit={(id, data) => updateTransaction.mutate({ id, data })}
+              onDelete={(id) => deleteTransaction.mutate(id)}
+              isUpdating={updateTransaction.isPending}
+              isDeleting={deleteTransaction.isPending}
             />
-          )}
-        </>
-      )}
-    </div>
+
+            {pagination && pagination.total > 0 && (
+              <DataTablePagination
+                page={pagination.page}
+                pageSize={pagination.limit}
+                total={pagination.total}
+                pages={pagination.pages}
+                onPageChange={setPage}
+                onPageSizeChange={setPageSize}
+              />
+            )}
+          </>
+        )}
+      </div>
+    </>
   );
 }

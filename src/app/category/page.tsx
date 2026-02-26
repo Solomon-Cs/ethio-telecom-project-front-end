@@ -32,6 +32,7 @@ export default function CategoryPage() {
         limit: pageSize,
         ...filters,
     });
+    console.log("🚀 ~ CategoryPage ~ categoriesByUser:", categoriesByUser)
 
     const handleFilterChange = (newFilters: any) => {
         setFilters(newFilters);
@@ -64,7 +65,7 @@ export default function CategoryPage() {
     }
 
     return (
-        <div className="space-y-6 p-4 sm:p-6">
+        <div className="space-y-6 p-2 sm:p-6">
             <CategoriesHeader
                 onFilterChange={handleFilterChange}
                 onRefresh={() => refetchByUser()}

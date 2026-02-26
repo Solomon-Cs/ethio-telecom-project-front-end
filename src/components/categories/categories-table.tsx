@@ -70,7 +70,7 @@ export function CategoriesTable({
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {categories?.map((category) => (
+                        {categories?.map((category: any) => (
                             <TableRow
                                 key={category.id}
                                 className="group hover:bg-muted/30 transition-colors"

@@ -66,14 +66,14 @@ export function useCategories(userId?: string, filters: TransactionFilters = {})
 
     return {
         categories: data?.data || [],
-        pagination: data?.meta,
         isLoading,
         error,
         refetch,
         createCategory,
         updateCategory,
         deleteCategory,
-        categoriesByUser: categoriesByUser || [],
+        pagination: categoriesByUser?.meta,
+        categoriesByUser: categoriesByUser?.data || [],
         isLoadingByUser,
         errorByUser,
         refetchByUser,

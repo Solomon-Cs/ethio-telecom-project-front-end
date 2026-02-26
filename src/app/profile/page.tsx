@@ -1,223 +1,278 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Pencil, Save, X } from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
+
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useFinanceStore } from '@/hooks/use-finance-store';
-import { useToast } from '@/hooks/use-toast';
-import {
-  Mail,
-  User,
-  Edit2,
-  X,
-  Check,
-  AlertCircle,
-  Sparkles,
-} from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Separator } from '@/components/ui/separator';
-import { motion } from 'framer-motion';
-import { useSession } from 'next-auth/react';
 
-export default function ProfilePage() {
-  const { profile, updateProfile, isLoading } = useFinanceStore();
-  const { toast } = useToast();
+const profileFormSchema = z.object({
+  firstName: z.string().min(1, 'First name required'),
+  lastName: z.string().min(1, 'Last name required'),
+  username: z.string().min(3, 'Minimum 3 characters').max(30),
+  email: z.string().email('Invalid email'),
+});
+
+type ProfileFormData = z.infer<typeof profileFormSchema>;
+
+interface ProfileCardProps {
+  onUpdate?: (data: ProfileFormData) => Promise<void>;
+}
+
+const ProfileCard = ({ onUpdate }: ProfileCardProps) => {
   const { data: session } = useSession();
+  const profile = session?.user;
 
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState(profile);
-  const [hasChanged, setHasChanged] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
+  const form = useForm<ProfileFormData>({
+    resolver: zodResolver(profileFormSchema),
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      username: '',
+      email: '',
+    },
+  });
+
+  // Reset form when session loads
   useEffect(() => {
-    setHasChanged(
-      formData.username !== profile.username ||
-      formData.email !== profile.email ||
-      formData.currency !== profile.currency
-    );
-  }, [formData, profile]);
+    if (profile) {
+      form.reset({
+        firstName: profile.firstName || '',
+        lastName: profile.lastName || '',
+        username: profile.username || '',
+        email: profile.email || '',
+      });
+    }
+  }, [profile, form]);
 
-  if (isLoading) return null;
-
-  const handleSave = () => {
-    updateProfile(formData);
-    setIsEditing(false);
-    toast({
-      title: 'Profile Updated',
-      description: 'Your settings were saved successfully.',
-    });
+  const onSubmit = async (data: ProfileFormData) => {
+    setIsLoading(true);
+    try {
+      if (onUpdate) await onUpdate(data);
+      setIsEditing(false);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleCancel = () => {
-    setFormData(profile);
+    form.reset();
     setIsEditing(false);
   };
 
+  const initials = `${profile?.firstName?.[0] ?? ''}${profile?.lastName?.[0] ?? ''
+    }`.toUpperCase();
+
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-indigo-100 via-white to-purple-100 dark:from-gray-950 dark:via-gray-900 dark:to-black flex justify-center p-6">
+    <div className="w-full  px-4 md:px-8 lg:px-12 py-8">
+      <Card className="w-full shadow-xl border-0 rounded-2xl overflow-hidden">
+        {/* Header Section */}
+        <div className="w-full bg-gradient-to-r from-primary/90 to-primary-500 p-8 text-white">
+          <div className="flex flex-col md:flex-row md:items-center gap-6">
+            <Avatar className="h-24 w-24 border-4 border-white shadow-lg">
+              <AvatarImage
+                src={" "}
+                alt={`${profile?.firstName} ${profile?.lastName}`}
+              />
+              <AvatarFallback className="text-2xl font-bold bg-primary">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
 
-      <motion.main
-        initial={{ opacity: 0, y: 15 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="w-full max-w-3xl space-y-6"
-      >
-        {/* HEADER */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-              <Sparkles className="h-6 w-6 text-purple-500" />
-              Profile Settings
-            </h2>
-            <p className="text-muted-foreground">
-              Manage your personal account information
-            </p>
-          </div>
-
-          <Badge
-            variant={isEditing ? 'default' : 'secondary'}
-            className="px-3 py-1 text-xs shadow"
-          >
-            {isEditing ? 'Editing' : 'Viewing'}
-          </Badge>
-        </div>
-
-        {/* AVATAR SECTION */}
-        <Card className="bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border shadow-xl">
-          <CardContent className="flex flex-col items-center p-8 space-y-4">
-            <div className="relative group">
-              <div className="h-32 w-32 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-4xl font-bold shadow-2xl ring-4 ring-white dark:ring-gray-800 transition-transform group-hover:scale-105">
-                {profile.username.charAt(0).toUpperCase()}
-              </div>
-              <div className="absolute inset-0 rounded-full animate-pulse ring-2 ring-purple-400/40" />
+            <div className="flex-1 space-y-1">
+              <h1 className="text-3xl font-bold">
+                {profile?.firstName} {profile?.lastName}
+              </h1>
+              <p className="opacity-90">@{profile?.username}</p>
+              <p className="opacity-80 text-sm">{profile?.email}</p>
             </div>
 
-            <div className="text-center">
-              <h1 className="text-2xl font-semibold">{profile.username}</h1>
-              <p className="text-muted-foreground flex items-center justify-center gap-1 text-sm">
-                <Mail className="h-4 w-4" />
-                {profile.email}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* INFO ALERT */}
-        {!isEditing && (
-          <Alert className="border-blue-200 bg-blue-50 dark:bg-blue-950/40">
-            <AlertCircle className="h-4 w-4 text-blue-500" />
-            <AlertDescription>
-              You're currently in view mode. Click edit to modify details.
-            </AlertDescription>
-          </Alert>
-        )}
-
-        {/* MAIN CARD */}
-        <Card className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border shadow-lg transition-all">
-
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <User className="h-5 w-5 text-primary" />
-              Account Details
-            </CardTitle>
-            <CardDescription>
-              {isEditing
-                ? 'Update your personal information.'
-                : 'Your account information overview.'}
-            </CardDescription>
-          </CardHeader>
-
-          <Separator />
-
-          <CardContent className="space-y-6 pt-6">
-
-            {/* USERNAME */}
-            <div className="space-y-2">
-              <Label>Username</Label>
-              {isEditing ? (
-                <Input
-                  value={formData.username}
-                  onChange={(e) =>
-                    setFormData({ ...formData, username: e.target.value })
-                  }
-                />
-              ) : (
-                <div className="p-3 rounded-md bg-muted/50 border text-sm">
-                  {profile.username}
-                </div>
-              )}
-            </div>
-
-            {/* EMAIL */}
-            <div className="space-y-2">
-              <Label>Email</Label>
-              {isEditing ? (
-                <Input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
-                />
-              ) : (
-                <div className="p-3 rounded-md bg-muted/50 border text-sm">
-                  {profile.email}
-                </div>
-              )}
-            </div>
-
-            {/* CURRENCY */}
-            {isEditing && (
-              <div className="space-y-2">
-                <Label>Preferred Currency</Label>
-                <Input
-                  value={formData.currency}
-                  onChange={(e) =>
-                    setFormData({ ...formData, currency: e.target.value })
-                  }
-                />
-              </div>
-            )}
-          </CardContent>
-
-          {/* FOOTER */}
-          <CardFooter className="flex justify-end gap-3 pt-6">
-
-            {isEditing ? (
-              <>
-                <Button variant="outline" onClick={handleCancel}>
-                  <X className="h-4 w-4 mr-2" />
-                  Cancel
-                </Button>
-
-                <Button
-                  disabled={!hasChanged}
-                  onClick={handleSave}
-                  className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 shadow-md"
-                >
-                  <Check className="h-4 w-4 mr-2" />
-                  Save Changes
-                </Button>
-              </>
-            ) : (
-              <Button onClick={() => setIsEditing(true)}>
-                <Edit2 className="h-4 w-4 mr-2" />
+            {!isEditing && (
+              <Button
+                onClick={() => setIsEditing(true)}
+                type="button"
+                variant="outline"
+                className="gap-2 bg-primary"
+              >
+                <Pencil className="h-4 w-4" />
                 Edit Profile
               </Button>
             )}
+          </div>
+        </div>
 
-          </CardFooter>
-        </Card>
-      </motion.main>
+        {/* Body */}
+        <CardContent className="p-8 pb-40 ">
+          <AnimatePresence mode="wait">
+            {isEditing ? (
+              <motion.div
+                key="edit"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.25 }}
+              >
+                <Form {...form}>
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="space-y-6"
+                  >
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <FormField
+                        control={form.control}
+                        name="firstName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>First Name</FormLabel>
+                            <FormControl>
+                              <Input {...field} disabled={isLoading} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="lastName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Last Name</FormLabel>
+                            <FormControl>
+                              <Input {...field} disabled={isLoading} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <FormField
+                      control={form.control}
+                      name="username"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Username</FormLabel>
+                          <FormControl>
+                            <Input {...field} disabled={isLoading} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email Address</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="email"
+                              {...field}
+                              disabled={isLoading}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Action Buttons */}
+                    <div className="flex justify-end gap-3 pt-6 border-t">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleCancel}
+                        disabled={isLoading}
+                      >
+                        <X className="h-4 w-4 mr-2" />
+                        Cancel
+                      </Button>
+
+                      <Button
+                        type="submit"
+                        disabled={isLoading}
+                        className="min-w-[130px]"
+                      >
+                        <Save className="h-4 w-4 mr-2" />
+                        {isLoading ? 'Saving...' : 'Save Changes'}
+                      </Button>
+                    </div>
+                  </form>
+                </Form>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="view"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25 }}
+                className="grid grid-cols-1 md:grid-cols-2 gap-8"
+              >
+                <div>
+                  <Label className="text-xs uppercase text-muted-foreground">
+                    First Name
+                  </Label>
+                  <p className="mt-2 text-lg font-medium">
+                    {profile?.firstName}
+                  </p>
+                </div>
+
+                <div>
+                  <Label className="text-xs uppercase text-muted-foreground">
+                    Last Name
+                  </Label>
+                  <p className="mt-2 text-lg font-medium">
+                    {profile?.lastName}
+                  </p>
+                </div>
+
+                <div>
+                  <Label className="text-xs uppercase text-muted-foreground">
+                    Username
+                  </Label>
+                  <p className="mt-2 text-lg font-medium">
+                    {profile?.username}
+                  </p>
+                </div>
+
+                <div>
+                  <Label className="text-xs uppercase text-muted-foreground">
+                    Email
+                  </Label>
+                  <p className="mt-2 text-lg font-medium">
+                    {profile?.email}
+                  </p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </CardContent>
+      </Card>
     </div>
   );
-}
+};
+
+export default ProfileCard;
