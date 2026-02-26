@@ -49,14 +49,14 @@ export default function TransactionsPage() {
 
   if (errorTransactionsByUser) {
     return (
-      <div className="p-6">
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
+      <div className='p-6'>
+        <Alert variant='destructive'>
+          <AlertCircle className='h-4 w-4' />
           <AlertDescription>
             Failed to load transactions. Please try again.
           </AlertDescription>
         </Alert>
-        <Button onClick={() => refetchTransactionsByUser()} className="mt-4">
+        <Button onClick={() => refetchTransactionsByUser()} className='mt-4'>
           Retry
         </Button>
       </div>
@@ -64,7 +64,7 @@ export default function TransactionsPage() {
   }
 
   return (
-    <div className="space-y-6 p-4 sm:p-6">
+    <div className='space-y-6 p-4 sm:p-6'>
       <TransactionsHeader
         onFilterChange={handleFilterChange}
         onRefresh={() => refetchTransactionsByUser()}
@@ -76,13 +76,13 @@ export default function TransactionsPage() {
       />
 
       {isLoadingTransactionsByUser ? (
-        <Card className="p-4">
-          <div className="space-y-3">
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-10 w-full" />
+        <Card className='p-4'>
+          <div className='space-y-3'>
+            <Skeleton className='h-10 w-full' />
+            <Skeleton className='h-10 w-full' />
+            <Skeleton className='h-10 w-full' />
+            <Skeleton className='h-10 w-full' />
+            <Skeleton className='h-10 w-full' />
           </div>
         </Card>
       ) : (

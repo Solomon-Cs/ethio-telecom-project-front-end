@@ -3,15 +3,14 @@ import { AIAssistant } from '@/components/finance/ai-assistant';
 import { RecentTransactions } from '@/components/finance/recent-transactions';
 import { IncomeExpenseCharts } from '@/components/finance/spending-chart';
 import { SummaryCards } from '@/components/finance/summary-cards';
-import { TransactionForm } from '@/components/finance/transaction-form';
+import { TransactionForm } from '@/components/transactions/transaction-form';
 import { useTransactions } from '@/hooks/use-transactions';
 import { Sparkles } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 
 const DashboardPage = () => {
-
   const { data: session } = useSession();
-  console.log("🚀 ~ DashboardPage ~ session:", session)
+  console.log('🚀 ~ DashboardPage ~ session:', session);
 
   const {
     summaryByUser,
@@ -22,12 +21,18 @@ const DashboardPage = () => {
     createTransaction,
     refetch,
   } = useTransactions(session?.user?.id as string);
-  console.log("🚀 ~ DashboardPage ~ transactionsByUser:", transactionsByUser)
 
+  const handleCreateTransaction = async (data: any) => {
+    await createTransaction.mutateAsync({
+      ...data,
+      userId: session?.user.id,
+    });
+  };
+  console.log('🚀 ~ DashboardPage ~ transactionsByUser:', transactionsByUser);
 
   return (
     <>
-      <main className='px-4 py-8 space-y-10 w-full '>
+      <main className='px-4 py-8 space-y-8 w-full '>
         <section className='flex flex-col md:flex-row md:items-center justify-between gap-4'>
           <div className='space-y-1'>
             <h1 className='text-4xl font-black tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent'>
@@ -50,14 +55,20 @@ const DashboardPage = () => {
         <SummaryCards summary={summaryByUser} />
 
         <div className='grid gap-8 lg:grid-cols-12'>
-          <div className='lg:col-span-9 space-y-8'>
-            <div className='grid gap-8 md:grid-cols-2'>
+          <div className='lg:col-span-12 space-y-8'>
+            <div className='grid gap-4 md:grid-cols-2'>
               <IncomeExpenseCharts summary={summaryByUser} />
-              <div className='space-y-4'>
+              <div className='space-y-4 shadow-lg shadow-primary/10 rounded-2xl border border-border/50 p-4'>
                 <h3 className='text-xs font-black uppercase tracking-widest text-muted-foreground px-1'>
                   Quick Add
                 </h3>
-                <TransactionForm onAdd={createTransaction as any} />
+                <TransactionForm
+                  onSubmit={async (data) => {
+                    await handleCreateTransaction(data);
+                    await refetch();
+                  }}
+                  isSubmitting={createTransaction.isPending}
+                />
               </div>
             </div>
             <RecentTransactions
@@ -66,9 +77,9 @@ const DashboardPage = () => {
             />
           </div>
 
-          <aside className='lg:col-span-3 h-fit sticky top-24'>
+          {/* <aside className='lg:col-span-3 h-fit sticky top-24'>
             <AIAssistant />
-          </aside>
+          </aside> */}
         </div>
       </main>
     </>

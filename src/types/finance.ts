@@ -12,7 +12,7 @@ export type TransactionCategory =
   | 'Other';
 
 export interface Transaction {
-  id: string;
+  id?: string;
   date: string;
   amount: number;
   category: TransactionCategory;
@@ -34,6 +34,6 @@ export interface FinancialSummary {
     totalIncome: number;
     totalExpense: number;
     balance: number;
-  }
+  };
   groupedByCategory: Record<any, any>;
 }
