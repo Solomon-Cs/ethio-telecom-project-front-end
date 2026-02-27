@@ -2,6 +2,8 @@
 
 import { useFinanceStore } from '@/hooks/use-finance-store';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { usePathname } from 'next/navigation';
+import DashboardPage from './dashboard/page';
 
 export default function Home({ children }: { children: React.ReactNode }) {
   const {
@@ -24,10 +26,13 @@ export default function Home({ children }: { children: React.ReactNode }) {
     );
   }
 
+  const pathname = usePathname()
+  console.log("🚀 ~ Home ~ pathname:", pathname)
+
   return (
     <div>
       <QueryClientProvider client={new QueryClient()}>
-        {children}
+        {pathname.includes('/dashboard') ? <DashboardPage /> : children}
       </QueryClientProvider>
     </div>
   );

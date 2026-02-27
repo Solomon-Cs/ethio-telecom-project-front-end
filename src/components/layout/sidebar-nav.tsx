@@ -95,11 +95,11 @@ export function SidebarNav() {
           <div className='flex items-center gap-2 mb-2'>
             <Sparkles className='h-4 w-4 text-primary' />
             <span className='text-xs font-black uppercase tracking-wider'>
-              AI Insights
+              Fin Tracker
             </span>
           </div>
           <p className='text-[10px] text-muted-foreground font-medium mb-3 leading-relaxed'>
-            Your spending is 15% lower than last month. Great job!
+            Track Your finance with  Fin Tracker!
           </p>
           <div className='h-1.5 w-full bg-background/50 rounded-full overflow-hidden'>
             <div className='h-full w-4/5 bg-primary rounded-full'></div>
