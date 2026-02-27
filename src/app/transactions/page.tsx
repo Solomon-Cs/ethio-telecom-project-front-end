@@ -91,6 +91,7 @@ export default function TransactionsPage() {
           <>
             <TransactionsTable
               transactions={transactionsByUser}
+              isLoading={isLoadingTransactionsByUser}
               onEdit={(id, data) => updateTransaction.mutate({ id, data })}
               onDelete={(id) => deleteTransaction.mutate(id)}
               isUpdating={updateTransaction.isPending}

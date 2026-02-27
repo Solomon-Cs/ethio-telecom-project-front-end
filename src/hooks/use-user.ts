@@ -3,12 +3,17 @@ import { UserFilters, userService } from '@/services/user.service';
 import { UserFormValues } from '@/lib/validations/user';
 import { toast } from 'sonner';
 
-export function useUsers(filters: UserFilters = {}) {
+export function useUsers(id: string, filters: UserFilters = {}) {
     const queryClient = useQueryClient();
 
     const { data, isLoading, error, refetch } = useQuery({
         queryKey: ['users', filters],
         queryFn: () => userService.getUsers(filters),
+    });
+
+    const { data: user } = useQuery({
+        queryKey: ['user', id],
+        queryFn: () => userService.getUserById(id),
     });
 
     const registerUser = useMutation({
@@ -60,6 +65,7 @@ export function useUsers(filters: UserFilters = {}) {
     return {
         users: data?.data || [],
         pagination: data?.meta,
+        user: user,
         isLoading,
         error,
         refetch,

@@ -21,12 +21,14 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useUsers } from '@/hooks/use-user';
 
 const profileFormSchema = z.object({
-  firstName: z.string().min(1, 'First name required'),
-  lastName: z.string().min(1, 'Last name required'),
-  username: z.string().min(3, 'Minimum 3 characters').max(30),
-  email: z.string().email('Invalid email'),
+  firstName: z.string().optional(),
+  middleName: z.string().optional(),
+  lastName: z.string().optional(),
+  username: z.string().optional(),
+  email: z.string().optional(),
 });
 
 type ProfileFormData = z.infer<typeof profileFormSchema>;
@@ -42,10 +44,13 @@ const ProfileCard = ({ onUpdate }: ProfileCardProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  const { user, isLoading: usersLoading, updateUser, error } = useUsers(profile?.id as string)
+
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
       firstName: '',
+      middleName: '',
       lastName: '',
       username: '',
       email: '',
@@ -57,6 +62,7 @@ const ProfileCard = ({ onUpdate }: ProfileCardProps) => {
     if (profile) {
       form.reset({
         firstName: profile.firstName || '',
+        middleName: profile.middleName || '',
         lastName: profile.lastName || '',
         username: profile.username || '',
         email: profile.email || '',
@@ -64,10 +70,10 @@ const ProfileCard = ({ onUpdate }: ProfileCardProps) => {
     }
   }, [profile, form]);
 
-  const onSubmit = async (data: ProfileFormData) => {
+  const onSubmit = async (data: any) => {
     setIsLoading(true);
     try {
-      if (onUpdate) await onUpdate(data);
+      await updateUser.mutateAsync({ id: profile?.id as string, data });
       setIsEditing(false);
     } finally {
       setIsLoading(false);
@@ -79,7 +85,7 @@ const ProfileCard = ({ onUpdate }: ProfileCardProps) => {
     setIsEditing(false);
   };
 
-  const initials = `${profile?.firstName?.[0] ?? ''}${profile?.lastName?.[0] ?? ''
+  const initials = `${user?.firstName?.[0] ?? ''}${user?.lastName?.[0] ?? ''
     }`.toUpperCase();
 
   return (
@@ -91,7 +97,7 @@ const ProfileCard = ({ onUpdate }: ProfileCardProps) => {
             <Avatar className="h-24 w-24 border-4 border-white shadow-lg">
               <AvatarImage
                 src={" "}
-                alt={`${profile?.firstName} ${profile?.lastName}`}
+                alt={`${user?.firstName} ${user?.lastName}`}
               />
               <AvatarFallback className="text-2xl font-bold bg-primary">
                 {initials}
@@ -100,10 +106,10 @@ const ProfileCard = ({ onUpdate }: ProfileCardProps) => {
 
             <div className="flex-1 space-y-1">
               <h1 className="text-3xl font-bold">
-                {profile?.firstName} {profile?.lastName}
+                {user?.firstName} {user?.lastName}
               </h1>
-              <p className="opacity-90">@{profile?.username}</p>
-              <p className="opacity-80 text-sm">{profile?.email}</p>
+              <p className="opacity-90"> User Name: {user?.username}</p>
+              <p className="opacity-80 text-sm">Email: {user?.email}</p>
             </div>
 
             {!isEditing && (
@@ -150,7 +156,23 @@ const ProfileCard = ({ onUpdate }: ProfileCardProps) => {
                           </FormItem>
                         )}
                       />
+                      <FormField
+                        control={form.control}
+                        name="middleName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Middle Name</FormLabel>
+                            <FormControl>
+                              <Input {...field} disabled={isLoading} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
+
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <FormField
                         control={form.control}
                         name="lastName"
@@ -164,39 +186,25 @@ const ProfileCard = ({ onUpdate }: ProfileCardProps) => {
                           </FormItem>
                         )}
                       />
+
+                      <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Email Address</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="email"
+                                {...field}
+                                disabled={isLoading}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     </div>
-
-                    <FormField
-                      control={form.control}
-                      name="username"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Username</FormLabel>
-                          <FormControl>
-                            <Input {...field} disabled={isLoading} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Email Address</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="email"
-                              {...field}
-                              disabled={isLoading}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
 
                     {/* Action Buttons */}
                     <div className="flex justify-end gap-3 pt-6 border-t">
@@ -236,7 +244,16 @@ const ProfileCard = ({ onUpdate }: ProfileCardProps) => {
                     First Name
                   </Label>
                   <p className="mt-2 text-lg font-medium">
-                    {profile?.firstName}
+                    {user?.firstName}
+                  </p>
+                </div>
+
+                <div>
+                  <Label className="text-xs uppercase text-muted-foreground">
+                    Middle Name
+                  </Label>
+                  <p className="mt-2 text-lg font-medium">
+                    {user?.middleName}
                   </p>
                 </div>
 
@@ -245,16 +262,7 @@ const ProfileCard = ({ onUpdate }: ProfileCardProps) => {
                     Last Name
                   </Label>
                   <p className="mt-2 text-lg font-medium">
-                    {profile?.lastName}
-                  </p>
-                </div>
-
-                <div>
-                  <Label className="text-xs uppercase text-muted-foreground">
-                    Username
-                  </Label>
-                  <p className="mt-2 text-lg font-medium">
-                    {profile?.username}
+                    {user?.lastName}
                   </p>
                 </div>
 
@@ -263,7 +271,7 @@ const ProfileCard = ({ onUpdate }: ProfileCardProps) => {
                     Email
                   </Label>
                   <p className="mt-2 text-lg font-medium">
-                    {profile?.email}
+                    {user?.email}
                   </p>
                 </div>
               </motion.div>

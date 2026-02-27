@@ -50,7 +50,7 @@ class UserService {
     }
 
     async updateUser(id: string, data: UserFormValues): Promise<User> {
-        const response = await axiosInstance.put(`${this.baseEndpoint}/${id}`, data);
+        const response = await axiosInstance.patch(`${this.baseEndpoint}/${id}`, data);
         return response.data;
     }
 

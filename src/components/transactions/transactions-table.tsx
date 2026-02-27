@@ -46,6 +46,7 @@ import {
 } from '@/components/ui/dialog';
 import dayjs from 'dayjs';
 import { CurrencyFormat } from '../finance/summary-cards';
+import { Skeleton } from '../ui/skeleton';
 
 interface TransactionsTableProps {
     transactions: any[];
@@ -53,7 +54,10 @@ interface TransactionsTableProps {
     onDelete: (id: string) => void;
     isUpdating?: boolean;
     isDeleting?: boolean;
+    isLoading?: boolean;
+
 }
+
 
 export function TransactionsTable({
     transactions,
@@ -61,7 +65,9 @@ export function TransactionsTable({
     onDelete,
     isUpdating,
     isDeleting,
+    isLoading,
 }: TransactionsTableProps) {
+    console.log("🚀 ~ TransactionsTable ~ isLoading:", isLoading)
     console.log("🚀 ~ TransactionsTable ~ transactions:", transactions)
     const [editingTransaction, setEditingTransaction] = useState<any>(null);
     const [deletingTransaction, setDeletingTransaction] = useState<string | null>(
@@ -96,6 +102,36 @@ export function TransactionsTable({
             'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400'
         );
     };
+
+    // Skeleton loader for table rows
+
+
+    if (isLoading) {
+        return (
+            <div className='rounded-xl border bg-card overflow-hidden'>
+                <Table>
+                    <TableHeader>
+                        <TableRow className='bg-muted/50 hover:bg-muted/50'>
+                            <TableHead className='font-semibold'>Date</TableHead>
+                            <TableHead className='font-semibold'>Category</TableHead>
+                            <TableHead className='font-semibold'>Type</TableHead>
+                            <TableHead className='font-semibold'>Description</TableHead>
+                            <TableHead className='font-semibold text-right'>Amount</TableHead>
+                            <TableHead className='w-[50px]'></TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        <div className="h-screen w-full flex items-center justify-center bg-background">
+                            <div className="flex flex-col items-center gap-4">
+                                <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+                                <p className="text-sm text-muted-foreground">Loading...</p>
+                            </div>
+                        </div>
+                    </TableBody>
+                </Table>
+            </div>
+        );
+    }
 
     return (
         <>
