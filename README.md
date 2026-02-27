@@ -1,4 +1,4 @@
-# Personal Finance Tracker
+# Personal Finance Tracker – Fronend  
 **Ethio Telecom Full Stack Development Project Assignment**
 
 A modern web application to help users track income, expenses, budgets, and financial goals.
