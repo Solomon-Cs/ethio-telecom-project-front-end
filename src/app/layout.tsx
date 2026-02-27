@@ -38,16 +38,27 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <head>
-        <link rel='preconnect' href='https://fonts.googleapis.com' />
-        <link
-          rel='preconnect'
-          href='https://fonts.gstatic.com'
-          crossOrigin='anonymous'
+        <title>Personal Finance Tracker</title>
+
+        <meta
+          name="description"
+          content="Manage your income, expenses, budgets, and finances."
         />
-        <link
-          href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap'
-          rel='stylesheet'
+
+        <meta
+          name="keywords"
+          content="personal finance, expense tracker, budget web app, finance management"
         />
+
+        <meta name="author" content="Solomon Shiferaw" />
+
+        {/* Open Graph */}
+        <meta property="og:title" content="Personal Finance Tracker" />
+        <meta
+          property="og:description"
+          content="Track income and manage expenses easily."
+        />
+        <meta property="og:type" content="website" />
       </head>
 
       <body className='font-body antialiased selection:bg-primary selection:text-primary-foreground'>
