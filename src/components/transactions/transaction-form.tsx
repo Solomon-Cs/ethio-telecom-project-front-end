@@ -67,8 +67,6 @@ export function TransactionForm({
   const { categoriesByUser, isLoadingByUser, errorByUser, refetchByUser } =
     useCategories(session?.user?.id as string, { limit: 100 });
 
-  console.log('🚀 ~ TransactionForm ~ categories:', categoriesByUser);
-
   const form = useForm<TransactionFormValues>({
     resolver: zodResolver(transactionSchema),
     defaultValues: initialData || {
@@ -85,10 +83,7 @@ export function TransactionForm({
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className='space-y-4 p-4 border rounded-xl bg-card'
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4 p-4'>
         <div className='grid grid-cols-2 gap-4'>
           <FormField
             control={form.control}
@@ -99,6 +94,7 @@ export function TransactionForm({
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
+                  required
                 >
                   <FormControl>
                     <SelectTrigger
@@ -133,6 +129,7 @@ export function TransactionForm({
                 <FormControl>
                   <Input
                     type='number'
+                    required
                     step='0.01'
                     placeholder='0.00'
                     {...field}
@@ -158,7 +155,11 @@ export function TransactionForm({
             <FormItem>
               <FormLabel>Category</FormLabel>
 
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select
+                required
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+              >
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder='Select a category' />
@@ -204,6 +205,7 @@ export function TransactionForm({
 
               <InputGroup>
                 <InputGroupInput
+                  required
                   id='date'
                   type='date'
                   value={

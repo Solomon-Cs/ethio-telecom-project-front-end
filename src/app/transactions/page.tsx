@@ -32,7 +32,6 @@ export default function TransactionsPage() {
     limit: pageSize,
     ...filters,
   });
-  console.log("🚀 ~ TransactionsPage ~ pagination:", pagination)
 
   const handleFilterChange = (newFilters: any) => {
     setFilters(newFilters);
@@ -66,28 +65,17 @@ export default function TransactionsPage() {
 
   return (
     <>
-      <div className='space-y-6 p-4 sm:p-6'>
-        <TransactionsHeader
-          onFilterChange={handleFilterChange}
-          onRefresh={() => refetchTransactionsByUser()}
-          onClearFilters={handleClearFilters}
-          hasActiveFilters={Object.keys(filters).length > 0}
-          isRefreshing={isLoadingTransactionsByUser}
-          onCreateTransaction={handleCreateTransaction}
-          isCreating={createTransaction.isPending}
-        />
-
-        {isLoadingTransactionsByUser ? (
-          <Card className='p-4'>
-            <div className='space-y-3'>
-              <Skeleton className='h-10 w-full' />
-              <Skeleton className='h-10 w-full' />
-              <Skeleton className='h-10 w-full' />
-              <Skeleton className='h-10 w-full' />
-              <Skeleton className='h-10 w-full' />
-            </div>
-          </Card>
-        ) : (
+      <Card className='border-none rounded-md shadow-sm w-full h-full'>
+        <div className='space-y-6 p-4 sm:p-6'>
+          <TransactionsHeader
+            onFilterChange={handleFilterChange}
+            onRefresh={() => refetchTransactionsByUser()}
+            onClearFilters={handleClearFilters}
+            hasActiveFilters={Object.keys(filters).length > 0}
+            isRefreshing={isLoadingTransactionsByUser}
+            onCreateTransaction={handleCreateTransaction}
+            isCreating={createTransaction.isPending}
+          />
           <>
             <TransactionsTable
               transactions={transactionsByUser}
@@ -109,8 +97,8 @@ export default function TransactionsPage() {
               />
             )}
           </>
-        )}
-      </div>
+        </div>
+      </Card>
     </>
   );
 }

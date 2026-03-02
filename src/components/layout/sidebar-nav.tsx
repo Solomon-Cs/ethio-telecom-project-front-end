@@ -29,11 +29,10 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { signOut, useSession } from 'next-auth/react';
 
-
 export function SidebarNav() {
   const pathname = usePathname();
-  const { data: session } = useSession()
-  console.log("🚀 ~ SidebarNav ~ session:", session)
+  const { data: session } = useSession();
+  console.log('🚀 ~ SidebarNav ~ session:', session);
 
   const items = [
     { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
@@ -44,15 +43,15 @@ export function SidebarNav() {
   ];
 
   const handleSignOut = () => {
-    signOut({ callbackUrl: "/auth/login" })
-  }
+    signOut({ callbackUrl: '/auth/login' });
+  };
 
   return (
-    <Sidebar className='border-r border-border/50 bg-background/80 backdrop-blur-xl'>
+    <Sidebar className='border-r border-border/50 backdrop-blur-xl  border bg-card text-card-foreground shadow-sm'>
       <SidebarHeader className='p-6'>
         <div className='flex items-center gap-3'>
           <div className='flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground font-black text-2xl shadow-lg shadow-primary/20'>
-            <Wallet className="h-7 w-7 text-white" />
+            <Wallet className='h-7 w-7 text-white' />
           </div>
           <div className='flex flex-col'>
             <span className='font-black text-lg tracking-tight leading-none'>
@@ -90,7 +89,8 @@ export function SidebarNav() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-
+      </SidebarContent>
+      <SidebarFooter className='p-4'>
         <div className='mt-8 px-4 py-6 rounded-2xl bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/10'>
           <div className='flex items-center gap-2 mb-2'>
             <Sparkles className='h-4 w-4 text-primary' />
@@ -99,21 +99,22 @@ export function SidebarNav() {
             </span>
           </div>
           <p className='text-[10px] text-muted-foreground font-medium mb-3 leading-relaxed'>
-            Track Your finance with  Fin Tracker!
+            Track Your finance with Fin Tracker!
           </p>
           <div className='h-1.5 w-full bg-background/50 rounded-full overflow-hidden'>
             <div className='h-full w-4/5 bg-primary rounded-full'></div>
           </div>
         </div>
-      </SidebarContent>
-      <SidebarFooter className='p-4'>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton className='w-full justify-start gap-3 p-2 rounded-xl h-14 hover:bg-muted/50 transition-all border border-transparent hover:border-border/50'>
               <Avatar className='h-9 w-9 border-2 border-primary/20'>
                 <AvatarImage src='https://picsum.photos/seed/user123/40/40' />
                 <AvatarFallback className='bg-primary/10 text-primary font-bold'>
-                  {session?.user.firstName ? session?.user?.firstName?.charAt(0).toUpperCase() + session?.user?.firstName?.charAt(1).toUpperCase() : "A"}
+                  {session?.user.firstName
+                    ? session?.user?.firstName?.charAt(0).toUpperCase() +
+                      session?.user?.firstName?.charAt(1).toUpperCase()
+                    : 'A'}
                 </AvatarFallback>
               </Avatar>
               <div className='flex flex-col items-start overflow-hidden'>
@@ -127,7 +128,10 @@ export function SidebarNav() {
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem className='mt-2'>
-            <SidebarMenuButton onClick={handleSignOut} className='text-destructive hover:text-destructive hover:bg-destructive/10 rounded-xl'>
+            <SidebarMenuButton
+              onClick={handleSignOut}
+              className='text-destructive hover:text-destructive hover:bg-destructive/10 rounded-xl'
+            >
               <LogOut className='h-4 w-4' />
               <span className='font-semibold'>Logout</span>
             </SidebarMenuButton>

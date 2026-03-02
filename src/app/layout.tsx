@@ -12,6 +12,7 @@ import { usePathname, useRouter } from 'next/navigation';
 
 function LayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  console.log('🚀 ~ LayoutContent ~ pathname:', pathname);
   const router = useRouter();
   const { data: session, status } = useSession();
 
@@ -25,14 +26,17 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
     if (!session && !isAuthRoute) {
       router.replace('/auth/login');
     }
+    if (session && pathname == '/') {
+      router.replace('/dashboard');
+    }
   }, [session, status, pathname, router]);
 
   if (status === 'loading') {
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-background">
-        <div className="flex flex-col items-center gap-4">
-          <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-          <p className="text-sm text-muted-foreground">Loading...</p>
+      <div className='h-screen w-full flex items-center justify-center bg-background'>
+        <div className='flex flex-col items-center gap-4'>
+          <div className='h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent' />
+          <p className='text-sm text-muted-foreground'>Loading...</p>
         </div>
       </div>
     );
@@ -44,11 +48,9 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   }
 
   return isAuthRoute ? (
-    <div className="flex h-screen w-full">
-      {children}
-    </div>
+    <div className='flex h-screen w-full'>{children}</div>
   ) : (
-    <div className="flex h-screen w-full bg-[#f8fafc] dark:bg-slate-950">
+    <div className='flex h-screen w-full bg-[#f8fafc] dark:bg-slate-950'>
       <SidebarNav />
       <Header>{children}</Header>
     </div>
@@ -70,26 +72,26 @@ export default function RootLayout({
             retry: 1,
           },
         },
-      })
+      }),
   );
 
   return (
-    <html lang="en">
+    <html lang='en'>
       <head>
         <title>Personal Finance Tracker</title>
         <meta
-          name="description"
-          content="Manage your income, expenses, budgets, and finances."
+          name='description'
+          content='Manage your income, expenses, budgets, and finances.'
         />
       </head>
 
-      <body className="font-body antialiased selection:bg-primary selection:text-primary-foreground">
+      <body className='font-body antialiased selection:bg-primary selection:text-primary-foreground'>
         <SessionProvider>
           <QueryClientProvider client={queryClient}>
             <SidebarProvider>
               <LayoutContent>{children}</LayoutContent>
             </SidebarProvider>
-            <Toaster richColors position="top-right" />
+            <Toaster richColors position='top-right' />
           </QueryClientProvider>
         </SessionProvider>
       </body>

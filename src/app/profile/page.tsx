@@ -39,12 +39,18 @@ interface ProfileCardProps {
 
 const ProfileCard = ({ onUpdate }: ProfileCardProps) => {
   const { data: session } = useSession();
-  const profile = session?.user;
 
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { user, isLoading: usersLoading, updateUser, error } = useUsers(profile?.id as string)
+  const {
+    user,
+    isLoading: usersLoading,
+    updateUser,
+    error,
+  } = useUsers(session?.user?.id as string);
+
+  const profile = user;
 
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileFormSchema),
@@ -68,7 +74,7 @@ const ProfileCard = ({ onUpdate }: ProfileCardProps) => {
         email: profile.email || '',
       });
     }
-  }, [profile, form]);
+  }, [profile, user, isEditing, form]);
 
   const onSubmit = async (data: any) => {
     setIsLoading(true);
@@ -85,41 +91,42 @@ const ProfileCard = ({ onUpdate }: ProfileCardProps) => {
     setIsEditing(false);
   };
 
-  const initials = `${user?.firstName?.[0] ?? ''}${user?.lastName?.[0] ?? ''
-    }`.toUpperCase();
+  const initials = `${user?.firstName?.[0] ?? ''}${
+    user?.middleName?.[0] ?? ''
+  }`.toUpperCase();
 
   return (
-    <div className="w-full  px-4 md:px-8 lg:px-12 py-8">
-      <Card className="w-full shadow-xl border-0 rounded-2xl overflow-hidden">
+    <div className='w-full'>
+      <Card className='w-full shadow-xl border-0 rounded-2xl overflow-hidden'>
         {/* Header Section */}
-        <div className="w-full bg-gradient-to-r from-primary/90 to-primary-500 p-8 text-white">
-          <div className="flex flex-col md:flex-row md:items-center gap-6">
-            <Avatar className="h-24 w-24 border-4 border-white shadow-lg">
+        <div className='w-full bg-gradient-to-r from-primary/90 to-primary-500 p-8 text-white'>
+          <div className='flex flex-col md:flex-row md:items-center gap-6'>
+            <Avatar className='h-24 w-24 border-4 border-white shadow-lg'>
               <AvatarImage
-                src={" "}
-                alt={`${user?.firstName} ${user?.lastName}`}
+                src={' '}
+                alt={`${user?.firstName} ${user?.middleName}`}
               />
-              <AvatarFallback className="text-2xl font-bold bg-primary">
+              <AvatarFallback className='text-2xl font-bold bg-primary'>
                 {initials}
               </AvatarFallback>
             </Avatar>
 
-            <div className="flex-1 space-y-1">
-              <h1 className="text-3xl font-bold">
+            <div className='flex-1 space-y-1'>
+              <h1 className='text-3xl font-bold'>
                 {user?.firstName} {user?.lastName}
               </h1>
-              <p className="opacity-90"> User Name: {user?.username}</p>
-              <p className="opacity-80 text-sm">Email: {user?.email}</p>
+              <p className='opacity-90'> User Name: {user?.username}</p>
+              <p className='opacity-80 text-sm'>Email: {user?.email}</p>
             </div>
 
             {!isEditing && (
               <Button
                 onClick={() => setIsEditing(true)}
-                type="button"
-                variant="outline"
-                className="gap-2 bg-primary"
+                type='button'
+                variant='outline'
+                className='gap-2 bg-primary'
               >
-                <Pencil className="h-4 w-4" />
+                <Pencil className='h-4 w-4' />
                 Edit Profile
               </Button>
             )}
@@ -127,11 +134,11 @@ const ProfileCard = ({ onUpdate }: ProfileCardProps) => {
         </div>
 
         {/* Body */}
-        <CardContent className="p-8 pb-40 ">
-          <AnimatePresence mode="wait">
+        <CardContent className='p-8 pb-40 '>
+          <AnimatePresence mode='wait'>
             {isEditing ? (
               <motion.div
-                key="edit"
+                key='edit'
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -15 }}
@@ -140,12 +147,12 @@ const ProfileCard = ({ onUpdate }: ProfileCardProps) => {
                 <Form {...form}>
                   <form
                     onSubmit={form.handleSubmit(onSubmit)}
-                    className="space-y-6"
+                    className='space-y-6'
                   >
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                       <FormField
                         control={form.control}
-                        name="firstName"
+                        name='firstName'
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>First Name</FormLabel>
@@ -158,7 +165,7 @@ const ProfileCard = ({ onUpdate }: ProfileCardProps) => {
                       />
                       <FormField
                         control={form.control}
-                        name="middleName"
+                        name='middleName'
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Middle Name</FormLabel>
@@ -169,13 +176,11 @@ const ProfileCard = ({ onUpdate }: ProfileCardProps) => {
                           </FormItem>
                         )}
                       />
-
-
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                       <FormField
                         control={form.control}
-                        name="lastName"
+                        name='lastName'
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Last Name</FormLabel>
@@ -189,13 +194,13 @@ const ProfileCard = ({ onUpdate }: ProfileCardProps) => {
 
                       <FormField
                         control={form.control}
-                        name="email"
+                        name='email'
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Email Address</FormLabel>
                             <FormControl>
                               <Input
-                                type="email"
+                                type='email'
                                 {...field}
                                 disabled={isLoading}
                               />
@@ -207,23 +212,23 @@ const ProfileCard = ({ onUpdate }: ProfileCardProps) => {
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex justify-end gap-3 pt-6 border-t">
+                    <div className='flex justify-end gap-3 pt-6 border-t'>
                       <Button
-                        type="button"
-                        variant="outline"
+                        type='button'
+                        variant='outline'
                         onClick={handleCancel}
                         disabled={isLoading}
                       >
-                        <X className="h-4 w-4 mr-2" />
+                        <X className='h-4 w-4 mr-2' />
                         Cancel
                       </Button>
 
                       <Button
-                        type="submit"
+                        type='submit'
                         disabled={isLoading}
-                        className="min-w-[130px]"
+                        className='min-w-[130px]'
                       >
-                        <Save className="h-4 w-4 mr-2" />
+                        <Save className='h-4 w-4 mr-2' />
                         {isLoading ? 'Saving...' : 'Save Changes'}
                       </Button>
                     </div>
@@ -232,47 +237,39 @@ const ProfileCard = ({ onUpdate }: ProfileCardProps) => {
               </motion.div>
             ) : (
               <motion.div
-                key="view"
+                key='view'
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.25 }}
-                className="grid grid-cols-1 md:grid-cols-2 gap-8"
+                className='grid grid-cols-1 md:grid-cols-2 gap-8'
               >
                 <div>
-                  <Label className="text-xs uppercase text-muted-foreground">
+                  <Label className='text-xs uppercase text-muted-foreground'>
                     First Name
                   </Label>
-                  <p className="mt-2 text-lg font-medium">
-                    {user?.firstName}
-                  </p>
+                  <p className='mt-2 text-lg font-medium'>{user?.firstName}</p>
                 </div>
 
                 <div>
-                  <Label className="text-xs uppercase text-muted-foreground">
+                  <Label className='text-xs uppercase text-muted-foreground'>
                     Middle Name
                   </Label>
-                  <p className="mt-2 text-lg font-medium">
-                    {user?.middleName}
-                  </p>
+                  <p className='mt-2 text-lg font-medium'>{user?.middleName}</p>
                 </div>
 
                 <div>
-                  <Label className="text-xs uppercase text-muted-foreground">
+                  <Label className='text-xs uppercase text-muted-foreground'>
                     Last Name
                   </Label>
-                  <p className="mt-2 text-lg font-medium">
-                    {user?.lastName}
-                  </p>
+                  <p className='mt-2 text-lg font-medium'>{user?.lastName}</p>
                 </div>
 
                 <div>
-                  <Label className="text-xs uppercase text-muted-foreground">
+                  <Label className='text-xs uppercase text-muted-foreground'>
                     Email
                   </Label>
-                  <p className="mt-2 text-lg font-medium">
-                    {user?.email}
-                  </p>
+                  <p className='mt-2 text-lg font-medium'>{user?.email}</p>
                 </div>
               </motion.div>
             )}

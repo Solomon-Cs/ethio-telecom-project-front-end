@@ -13,39 +13,52 @@ import {
   Legend,
   CartesianGrid,
 } from 'recharts';
+import EmptyIcon from '../ui/empty-icon';
 
 type Props = {
   summary: FinancialSummary;
 };
 
 export function IncomeExpenseBarChart({ summary }: Props) {
+  // const transformData = () => {
+  //   if (!summary?.groupedByCategory) return [];
+
+  //   const map: Record<
+  //     string,
+  //     { category: string; income: number; expense: number }
+  //   > = {};
+
+  //   Object.values(summary.groupedByCategory).forEach((item: any) => {
+  //     const category = item.categoryName;
+
+  //     if (!map[category]) {
+  //       map[category] = { category, income: 0, expense: 0 };
+  //     }
+
+  //     if (item.categoryType === 'INCOME') {
+  //       map[category].income += Number(item.totalAmount);
+  //     }
+
+  //     if (item.categoryType === 'EXPENSE') {
+  //       map[category].expense += Number(item.totalAmount);
+  //     }
+  //   });
+
+  //   return Object.values(map).sort(
+  //     (a, b) => b.income + b.expense - (a.income + a.expense),
+  //   );
+  // };
+
   const transformData = () => {
     if (!summary?.groupedByCategory) return [];
 
-    const map: Record<
-      string,
-      { category: string; income: number; expense: number }
-    > = {};
-
-    Object.values(summary.groupedByCategory).forEach((item: any) => {
-      const category = item.categoryName;
-
-      if (!map[category]) {
-        map[category] = { category, income: 0, expense: 0 };
-      }
-
-      if (item.categoryType === 'INCOME') {
-        map[category].income += Number(item.totalAmount);
-      }
-
-      if (item.categoryType === 'EXPENSE') {
-        map[category].expense += Number(item.totalAmount);
-      }
-    });
-
-    return Object.values(map).sort(
-      (a, b) => b.income + b.expense - (a.income + a.expense),
-    );
+    return summary.groupedByCategory
+      .map((item: any) => ({
+        category: item.categoryName,
+        income: Number(item.totalIncomes ?? 0),
+        expense: Number(item.totalExpenses ?? 0),
+      }))
+      .sort((a: any, b: any) => b.income + b.expense - (a.income + a.expense));
   };
 
   const data = transformData();
@@ -62,8 +75,8 @@ export function IncomeExpenseBarChart({ summary }: Props) {
       <CardContent>
         <div className='h-[400px] w-full'>
           {data.length === 0 ? (
-            <div className='flex items-center justify-center h-full text-muted-foreground'>
-              No financial data available
+            <div className='flex flex-col items-center justify-center'>
+              <EmptyIcon />
             </div>
           ) : (
             <ResponsiveContainer width='100%' height='100%'>
